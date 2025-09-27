@@ -15,6 +15,7 @@ const Header = () => {
             height={140}
             width={32}
             className='h-8 w-auto cursor-pointer'
+            priority={false}
           />
         </Link>
 
