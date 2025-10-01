@@ -30,9 +30,9 @@ const SignUp = () => {
   })
   const onSubmit = async (data: SignUpFormData) => {
     try {
-      console.log('Form Data:', data)
+      // TODO: wire to API/auth action; show toast/redirect on success
     } catch (error) {
-      console.error('Error during sign-up:', error)
+      // TODO: show user-friendly error
     }
   }
   return (
@@ -46,7 +46,7 @@ const SignUp = () => {
           placeholder='John Doe'
           register={register}
           error={errors.fullName}
-          validation={{ required: 'Full Name is required', minLength: 2 }}
+          validation={{ required: 'Full Name is required', minLength: { value: 2, message: 'Must be at least 2 characters' } }}
         />
         <InputField
           name='email'

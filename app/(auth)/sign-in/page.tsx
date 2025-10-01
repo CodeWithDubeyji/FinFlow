@@ -10,18 +10,18 @@ const SignIn = () => {
     handleSubmit,
     control,
     formState: { errors, isSubmitting }
-  } = useForm<SignUpFormData>({
+  } = useForm<SignInFormData>({
     defaultValues: {
       email: '',
       password: ''
     },
     mode: 'onBlur'
   })
-  const onSubmit = async (data: SignUpFormData) => {
+  const onSubmit = async (data: SignInFormData) => {
     try {
-      console.log('Form Data:', data)
+      // TODO: call sign-in action; redirect on success
     } catch (error) {
-      console.error('Error during sign-in:', error)
+      // TODO: show user-friendly error
     }
   }
   return (
