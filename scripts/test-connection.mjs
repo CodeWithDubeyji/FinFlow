@@ -24,7 +24,6 @@ async function testDatabaseConnection() {
     process.exit(1)
   }
   console.log(`${colors.green}✅ MONGODB_URI found${colors.reset}`)
-  console.log(`   Connection string: ${MONGODB_URI.substring(0, 30)}...${colors.reset}\n`)
 
   // Step 2: Attempt connection
   console.log(`${colors.yellow}Step 2: Connecting to MongoDB...${colors.reset}`)
@@ -42,7 +41,7 @@ async function testDatabaseConnection() {
   }
 
   // Step 3: Close connection
-  console.log(`${colors.yellow}Step 5: Closing connection...${colors.reset}`)
+  console.log(`${colors.yellow}Step 3: Closing connection...${colors.reset}`)
   await mongoose.connection.close()
   console.log(`${colors.green}✅ Connection closed successfully${colors.reset}\n`)
 

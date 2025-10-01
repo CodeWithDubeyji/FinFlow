@@ -1,4 +1,6 @@
+import dotenv from 'dotenv'
 import mongoose from 'mongoose'
+dotenv.config()
 
 const MONGODB_URI = process.env.MONGODB_URI
 
@@ -30,5 +32,9 @@ export const connectToDatabase = async () => {
     throw e
   }
 
-  console.log(`Connected to Database ${process.env.NODE_ENV} - ${MONGODB_URI}`)
+  console.log(
+    `Connected to Database ${process.env.NODE_ENV} - ${
+      cached.conn.connection.db?.databaseName || 'unknown'
+    }`
+  )
 }
