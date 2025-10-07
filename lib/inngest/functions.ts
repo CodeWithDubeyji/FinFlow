@@ -142,23 +142,45 @@ export const sendDailyNewsSummary = inngest.createFunction(
     }
 
     // Step 4: Send the emails with proper error handling
-    await step.run('send-news-emails', async () => {
-      await Promise.all(
-        userNewsSummaries.map(async ({ user, newsContent }) => {
-          if (!newsContent) return false
+    const emailResults = await step.run('send-news-emails', async () => {
+      const results = await Promise.all(
+        userNewsSummaries.map(async ({ user, newsContent }): Promise<boolean> => {
+          if (!newsContent) {
+            console.log(`Skipping email for ${user.email}: no news content`)
+            return false
+          }
 
-          return await sendDailyNewsSummaryEmail({
-            email: user.email,
-            date: formatDateToday,
-            newsContent
-          })
+          try {
+            await sendDailyNewsSummaryEmail({
+              email: user.email,
+              date: formatDateToday(),
+              newsContent
+            })
+            console.log(`Successfully sent news summary email to ${user.email}`)
+            return true
+          } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+            console.error(`Failed to send news summary email to ${user.email}:`, errorMessage)
+            return false
+          }
         })
       )
+
+      const successfulEmails = results.filter(result => result).length
+      const failedEmails = results.filter(result => !result).length
+
+      console.log(`Email batch completed: ${successfulEmails} successful, ${failedEmails} failed`)
+
+      return { successfulEmails, failedEmails, results }
     })
 
     return {
       success: true,
-      message: `Processed news for ${users.length} users`
+      message: `Processed news for ${users.length} users`,
+      details: {
+        emailsSent: emailResults.successfulEmails,
+        emailsFailed: emailResults.failedEmails
+      }
     }
   }
 )

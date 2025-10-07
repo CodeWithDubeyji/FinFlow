@@ -66,6 +66,9 @@ export async function getNews(
       const maxRounds = 6
       let symbolIndex = 0
 
+      // Track raw Finnhub IDs to prevent duplicates
+      const rawIdSet = new Set<number>()
+
       // Round-robin through symbols, max 6 iterations
       for (let round = 0; round < maxRounds && articles.length < 6; round++) {
         const symbol = cleanedSymbols[symbolIndex % cleanedSymbols.length]
@@ -74,14 +77,17 @@ export async function getNews(
           const url = `${FINNHUB_BASE_URL}/company-news?symbol=${symbol}&from=${from}&to=${to}&token=${NEXT_PUBLIC_FINNHUB_API_KEY}`
           const newsData = await fetchJSON<RawNewsArticle[]>(url)
 
-          // Find first valid article we haven't added yet
+          // Find first valid article we haven't added yet using raw Finnhub ID
           const validArticle = newsData.find(
             article =>
               validateArticle(article) &&
-              !articles.some(a => a.id === article.id)
+              !rawIdSet.has(article.id)
           )
 
           if (validArticle) {
+            // Add raw ID to prevent future duplicates
+            rawIdSet.add(validArticle.id)
+            // Format and add the article
             articles.push(formatArticle(validArticle, true, symbol, round))
           }
         } catch (error) {
@@ -91,8 +97,15 @@ export async function getNews(
         symbolIndex++
       }
 
-      // Sort by datetime (newest first) and return
-      return articles.sort((a, b) => b.datetime - a.datetime)
+      // Sort by datetime (newest first)
+      const sortedArticles = articles.sort((a, b) => b.datetime - a.datetime)
+
+      // If symbols were requested but no articles found, fall back to general news
+      if (sortedArticles.length === 0) {
+        return getGeneralNews(from, to)
+      }
+
+      return sortedArticles
     }
 
     // No symbols - fetch general market news

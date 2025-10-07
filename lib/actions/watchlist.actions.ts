@@ -22,7 +22,7 @@ export const getWatchlistSymbolsByEmail = async (
     }
 
     // Find user by email in Better Auth's users collection
-    const user = await db.collection('users').findOne(
+    const user = await db.collection('user').findOne(
       { email },
       { projection: { _id: 1, id: 1 } }
     )

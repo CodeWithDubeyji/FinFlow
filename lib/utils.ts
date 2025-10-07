@@ -116,7 +116,7 @@ export const formatPrice = (price: number) => {
   }).format(price)
 }
 
-export const formatDateToday = new Date().toLocaleDateString('en-US', {
+export const formatDateToday = () => new Date().toLocaleDateString('en-US', {
   weekday: 'long',
   year: 'numeric',
   month: 'long',
