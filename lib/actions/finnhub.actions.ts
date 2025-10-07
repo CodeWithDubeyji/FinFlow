@@ -67,7 +67,7 @@ export async function getNews(
       let symbolIndex = 0
 
       // Track raw Finnhub IDs to prevent duplicates
-      const rawIdSet = new Set<number>()
+      const rawIdSet = new Set<string>()
 
       // Round-robin through symbols, max 6 iterations
       for (let round = 0; round < maxRounds && articles.length < 6; round++) {
@@ -81,12 +81,12 @@ export async function getNews(
           const validArticle = newsData.find(
             article =>
               validateArticle(article) &&
-              !rawIdSet.has(article.id)
+              !rawIdSet.has(String(article.id))
           )
 
           if (validArticle) {
             // Add raw ID to prevent future duplicates
-            rawIdSet.add(validArticle.id)
+            rawIdSet.add(String(validArticle.id))
             // Format and add the article
             articles.push(formatArticle(validArticle, true, symbol, round))
           }
