@@ -180,3 +180,87 @@ export const removeFromWatchlist = async (
     return { success: false, message: 'Failed to remove stock from watchlist' }
   }
 }
+
+/**
+ * Get watchlist symbols for the current authenticated user
+ * @returns Array of stock symbols (strings) or empty array if user not found
+ */
+export const getCurrentUserWatchlistSymbols = async (): Promise<string[]> => {
+  try {
+    // Get current session
+    const session = await auth.api.getSession({
+      headers: await headers()
+    })
+
+    if (!session?.user?.email) {
+      return []
+    }
+
+    return getWatchlistSymbolsByEmail(session.user.email)
+  } catch (error) {
+    console.error('Error fetching current user watchlist symbols:', error)
+    return []
+  }
+}
+
+/**
+ * Get all watchlist items for the current user
+ * @returns Array of watchlist items with symbol, company, and addedAt
+ */
+export const getWatchlistItems = async (): Promise<Array<{
+  symbol: string
+  company: string
+  addedAt: Date
+}>> => {
+  try {
+    // Get current session
+    const session = await auth.api.getSession({
+      headers: await headers()
+    })
+
+    if (!session?.user?.email) {
+      return []
+    }
+
+    const email = session.user.email
+
+    // Connect to database
+    const mongoose = await connectToDatabase()
+    const db = mongoose.connection.db
+
+    if (!db) {
+      return []
+    }
+
+    // Find user by email
+    const user = await db.collection('user').findOne(
+      { email },
+      { projection: { _id: 1, id: 1 } }
+    )
+
+    if (!user) {
+      return []
+    }
+
+    const userId = user.id || user._id?.toString()
+
+    if (!userId) {
+      return []
+    }
+
+    // Get watchlist items
+    const watchlistItems = await Watchlist.find(
+      { userId },
+      { symbol: 1, company: 1, addedAt: 1, _id: 0 }
+    ).sort({ addedAt: -1 }).lean() // Most recent first
+
+    return watchlistItems.map(item => ({
+      symbol: item.symbol,
+      company: item.company,
+      addedAt: item.addedAt
+    }))
+  } catch (error) {
+    console.error('Error fetching watchlist items:', error)
+    return []
+  }
+}

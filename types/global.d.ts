@@ -108,13 +108,13 @@ declare global {
         }>;
     };
 
-    type WatchlistButtonProps = {
+    type StarButtonProps = {
         symbol: string;
         company: string;
         isInWatchlist: boolean;
-        showTrashIcon?: boolean;
-        type?: 'button' | 'icon';
         onWatchlistChange?: (symbol: string, isAdded: boolean) => void;
+        className?: string;
+        size?: 'sm' | 'md' | 'lg';
     };
 
     type QuoteData = {
