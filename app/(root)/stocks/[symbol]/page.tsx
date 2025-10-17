@@ -16,6 +16,9 @@ export default async function StockDetails({ params }: StockDetailsPageProps) {
   const { symbol } = await params;
   const scriptUrl = `https://s3.tradingview.com/external-embedding/embed-widget-`;
 
+  // Clean symbol - take only the part before the first dot
+  const cleanSymbol = symbol.split('.')[0].toUpperCase();
+
   // Get current user session
   const session = await auth.api.getSession({
     headers: await headers()
@@ -25,7 +28,7 @@ export default async function StockDetails({ params }: StockDetailsPageProps) {
   let isInWatchlist = false;
   if (session?.user?.email) {
     const watchlistSymbols = await getWatchlistSymbolsByEmail(session.user.email);
-    isInWatchlist = watchlistSymbols.includes(symbol.toUpperCase());
+    isInWatchlist = watchlistSymbols.includes(cleanSymbol);
   }
 
   return (
@@ -35,20 +38,20 @@ export default async function StockDetails({ params }: StockDetailsPageProps) {
         <div className="flex flex-col gap-6">
           <TradingViewWidget
             scriptUrl={`${scriptUrl}symbol-info.js`}
-            config={SYMBOL_INFO_WIDGET_CONFIG(symbol)}
+            config={SYMBOL_INFO_WIDGET_CONFIG(cleanSymbol)}
             height={170}
           />
 
           <TradingViewWidget
             scriptUrl={`${scriptUrl}advanced-chart.js`}
-            config={CANDLE_CHART_WIDGET_CONFIG(symbol)}
+            config={CANDLE_CHART_WIDGET_CONFIG(cleanSymbol)}
             className="custom-chart"
             height={600}
           />
 
           <TradingViewWidget
             scriptUrl={`${scriptUrl}advanced-chart.js`}
-            config={BASELINE_WIDGET_CONFIG(symbol)}
+            config={BASELINE_WIDGET_CONFIG(cleanSymbol)}
             className="custom-chart"
             height={600}
           />
@@ -58,27 +61,27 @@ export default async function StockDetails({ params }: StockDetailsPageProps) {
         <div className="flex flex-col gap-6">
           <div className="flex items-center justify-between">
             <WatchlistButton
-              symbol={symbol.toUpperCase()}
-              company={symbol.toUpperCase()}
+              symbol={cleanSymbol}
+              company={cleanSymbol}
               isInWatchlist={isInWatchlist}
             />
           </div>
 
           <TradingViewWidget
             scriptUrl={`${scriptUrl}technical-analysis.js`}
-            config={TECHNICAL_ANALYSIS_WIDGET_CONFIG(symbol)}
+            config={TECHNICAL_ANALYSIS_WIDGET_CONFIG(cleanSymbol)}
             height={400}
           />
 
           <TradingViewWidget
             scriptUrl={`${scriptUrl}company-profile.js`}
-            config={COMPANY_PROFILE_WIDGET_CONFIG(symbol)}
+            config={COMPANY_PROFILE_WIDGET_CONFIG(cleanSymbol)}
             height={440}
           />
 
           <TradingViewWidget
             scriptUrl={`${scriptUrl}financials.js`}
-            config={COMPANY_FINANCIALS_WIDGET_CONFIG(symbol)}
+            config={COMPANY_FINANCIALS_WIDGET_CONFIG(cleanSymbol)}
             height={464}
           />
         </div>

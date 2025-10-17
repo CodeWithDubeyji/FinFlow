@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+'use client'
+import { useState, useEffect, useTransition } from 'react'
 import {
   CommandDialog,
   CommandInput,
@@ -10,20 +11,37 @@ import {
 import { Button } from './ui/button'
 import { Loader2, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
-import { set } from 'mongoose'
 import { searchStocks } from '@/lib/actions/finnhub.actions'
+import { getCurrentUserWatchlistSymbols } from '@/lib/actions/watchlist.actions'
 import { useDebounce } from '@/hooks/useDebounce'
+import { StarButton } from './StarButton'
+
+type StockWithWatchlistStatus = {
+  symbol: string;
+  name: string;
+  exchange: string;
+  type: string;
+  isInWatchlist: boolean;
+};
 
 export function SearchCommand ({
   renderAs = 'text',
   label = 'Add stocks',
-  initialStocks = []
-}: SearchCommandProps) {
+  initialStocks = [],
+  className = ''
+}: {
+  renderAs?: 'button' | 'text';
+  label?: string;
+  initialStocks?: StockWithWatchlistStatus[];
+  className?: string;
+}) {
   const [open, setOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [loading, setLoading] = useState(false)
   const [stocks, setStocks] =
     useState<StockWithWatchlistStatus[]>(initialStocks)
+  const [watchlistSymbols, setWatchlistSymbols] = useState<Set<string>>(new Set())
+  const [isPending, startTransition] = useTransition()
 
   const isSearchMode = !!searchTerm.trim()
 
@@ -40,6 +58,22 @@ export function SearchCommand ({
     return () => document.removeEventListener('keydown', down)
   }, [])
 
+  // Fetch user's watchlist symbols when modal opens
+  useEffect(() => {
+    if (open) {
+      const fetchWatchlistSymbols = async () => {
+        try {
+          const symbols = await getCurrentUserWatchlistSymbols()
+          setWatchlistSymbols(new Set(symbols))
+        } catch (error) {
+          console.error('Error fetching watchlist symbols:', error)
+        }
+      }
+
+      fetchWatchlistSymbols()
+    }
+  }, [open])
+
   const handleSearchStocks = async () => {
     if (!searchTerm.trim()) {
       return setStocks(initialStocks)
@@ -48,7 +82,12 @@ export function SearchCommand ({
     setLoading(true)
     try {
       const results = await searchStocks(searchTerm.trim())
-      setStocks(results)
+      // Update watchlist status based on user's actual watchlist
+      const updatedResults = results.map(stock => ({
+        ...stock,
+        isInWatchlist: watchlistSymbols.has(stock.symbol.toUpperCase())
+      }))
+      setStocks(updatedResults)
     } catch (e) {
       setStocks([])
     } finally {
@@ -60,7 +99,18 @@ export function SearchCommand ({
 
   useEffect(() => {
     debouncedSearch()
-  }, [searchTerm])
+  }, [searchTerm, watchlistSymbols])
+
+  // Update watchlist status when watchlist symbols change
+  useEffect(() => {
+    if (stocks.length > 0) {
+      const updatedStocks = stocks.map(stock => ({
+        ...stock,
+        isInWatchlist: watchlistSymbols.has(stock.symbol.toUpperCase())
+      }))
+      setStocks(updatedStocks)
+    }
+  }, [watchlistSymbols])
 
   const handleOpenModal = () => {
     setOpen(true)
@@ -72,6 +122,26 @@ export function SearchCommand ({
     setStocks(initialStocks)
   }
 
+  const handleWatchlistChange = (symbol: string, isAdded: boolean) => {
+    // Update the watchlist symbols set
+    const newWatchlistSymbols = new Set(watchlistSymbols)
+    if (isAdded) {
+      newWatchlistSymbols.add(symbol.toUpperCase())
+    } else {
+      newWatchlistSymbols.delete(symbol.toUpperCase())
+    }
+    setWatchlistSymbols(newWatchlistSymbols)
+
+    // Update the stock in the current list
+    setStocks(prevStocks =>
+      prevStocks.map(stock =>
+        stock.symbol.toUpperCase() === symbol.toUpperCase()
+          ? { ...stock, isInWatchlist: isAdded }
+          : stock
+      )
+    )
+  }
+
   return (
     <>
       {renderAs === 'text' ? (
@@ -79,7 +149,7 @@ export function SearchCommand ({
           {label}
         </span>
       ) : (
-        <Button onClick={handleOpenModal}>{label}</Button>
+        <Button onClick={handleOpenModal} className={className}>{label}</Button>
       )}
       <CommandDialog
         open={open}
@@ -105,10 +175,10 @@ export function SearchCommand ({
             </div>
           ) : (
             <ul>
-              <div className='search-count'>
+              <li className='search-count'>
                 {isSearchMode ? 'Search Results' : 'Popular Stocks'}
                 {` `}({displayStocks?.length || 0})
-              </div>
+              </li>
               {displayStocks.map((stock, i) => (
                 <li key={stock.symbol} className='search-item'>
                   <Link
@@ -124,6 +194,13 @@ export function SearchCommand ({
                         {stock.type}
                       </div>
                     </div>
+                      <StarButton
+                        symbol={stock.symbol}
+                        company={stock.name}
+                        isInWatchlist={stock.isInWatchlist}
+                        onWatchlistChange={handleWatchlistChange}
+                        size="md"
+                      />
                   </Link>
                 </li>
               ))}
