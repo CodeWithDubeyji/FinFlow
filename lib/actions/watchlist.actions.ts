@@ -2,6 +2,8 @@
 
 import { connectToDatabase } from '@/database/mongoose'
 import Watchlist from '@/database/models/watchlist.model'
+import { auth } from '@/lib/better-auth/auth'
+import { headers } from 'next/headers'
 
 /**
  * Get all watchlist symbols for a user by their email
@@ -51,5 +53,130 @@ export const getWatchlistSymbolsByEmail = async (
   } catch (error) {
     console.error('Error fetching watchlist symbols by email:', error)
     return []
+  }
+}
+
+/**
+ * Add a stock to user's watchlist
+ * @param symbol - Stock symbol
+ * @param company - Company name
+ * @returns Success status and message
+ */
+export const addToWatchlist = async (
+  symbol: string,
+  company: string
+): Promise<{ success: boolean; message: string }> => {
+  try {
+    // Get current session
+    const session = await auth.api.getSession({
+      headers: await headers()
+    })
+
+    if (!session?.user?.email) {
+      return { success: false, message: 'User not authenticated' }
+    }
+
+    const email = session.user.email
+
+    // Connect to database
+    const mongoose = await connectToDatabase()
+    const db = mongoose.connection.db
+
+    if (!db) {
+      return { success: false, message: 'Database connection failed' }
+    }
+
+    // Find user by email
+    const user = await db.collection('user').findOne(
+      { email },
+      { projection: { _id: 1, id: 1 } }
+    )
+
+    if (!user) {
+      return { success: false, message: 'User not found' }
+    }
+
+    const userId = user.id || user._id?.toString()
+
+    if (!userId) {
+      return { success: false, message: 'Invalid user ID' }
+    }
+
+    // Add to watchlist (will fail if already exists due to unique index)
+    await Watchlist.create({
+      userId,
+      symbol: symbol.toUpperCase().trim(),
+      company: company.trim()
+    })
+
+    return { success: true, message: 'Stock added to watchlist' }
+  } catch (error: any) {
+    if (error.code === 11000) {
+      // Duplicate key error
+      return { success: false, message: 'Stock already in watchlist' }
+    }
+    console.error('Error adding to watchlist:', error)
+    return { success: false, message: 'Failed to add stock to watchlist' }
+  }
+}
+
+/**
+ * Remove a stock from user's watchlist
+ * @param symbol - Stock symbol
+ * @returns Success status and message
+ */
+export const removeFromWatchlist = async (
+  symbol: string
+): Promise<{ success: boolean; message: string }> => {
+  try {
+    // Get current session
+    const session = await auth.api.getSession({
+      headers: await headers()
+    })
+
+    if (!session?.user?.email) {
+      return { success: false, message: 'User not authenticated' }
+    }
+
+    const email = session.user.email
+
+    // Connect to database
+    const mongoose = await connectToDatabase()
+    const db = mongoose.connection.db
+
+    if (!db) {
+      return { success: false, message: 'Database connection failed' }
+    }
+
+    // Find user by email
+    const user = await db.collection('user').findOne(
+      { email },
+      { projection: { _id: 1, id: 1 } }
+    )
+
+    if (!user) {
+      return { success: false, message: 'User not found' }
+    }
+
+    const userId = user.id || user._id?.toString()
+
+    if (!userId) {
+      return { success: false, message: 'Invalid user ID' }
+    }
+
+    // Remove from watchlist
+    const result = await Watchlist.deleteOne({
+      userId,
+      symbol: symbol.toUpperCase().trim()
+    })
+
+    if (result.deletedCount === 0) {
+      return { success: false, message: 'Stock not found in watchlist' }
+    }
+
+    return { success: true, message: 'Stock removed from watchlist' }
+  } catch (error) {
+    console.error('Error removing from watchlist:', error)
+    return { success: false, message: 'Failed to remove stock from watchlist' }
   }
 }

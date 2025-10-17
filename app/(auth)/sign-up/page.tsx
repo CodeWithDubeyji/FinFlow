@@ -8,7 +8,7 @@ import {
   INVESTMENT_GOALS,
   PREFERRED_INDUSTRIES,
   RISK_TOLERANCE_OPTIONS
-} from '@/lib/contants'
+} from '@/lib/constants'
 import FooterLinks from '@/components/forms/FooterLinks'
 import { signUpWithEmail } from '@/lib/actions/auth.actions'
 
