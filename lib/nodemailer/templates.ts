@@ -5,7 +5,7 @@ export const WELCOME_EMAIL_TEMPLATE = `<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="format-detection" content="telephone=no">
     <meta name="x-apple-disable-message-reformatting">
-    <title>Welcome to Signalist</title>
+    <title>Welcome to FinFlow</title>
     <!--[if mso]>
     <noscript>
         <xml>
@@ -150,10 +150,10 @@ export const WELCOME_EMAIL_TEMPLATE = `<!DOCTYPE html>
                             
                             <!-- Footer Text -->
                             <p class="mobile-text dark-text-muted" style="margin: 40px 0 0 0; font-size: 14px; line-height: 1.5; color: #CCDADC !important; text-align: center;">
-                               Signalist HQ, 200 Market Street, San Francisco, CA 94105<br>
+                               FinFlow HQ, 200 Market Street, San Francisco, CA 94105<br>
                                 <a href="#" style="color: #CCDADC !important; text-decoration: underline;">Unsubscribe</a> | 
-                                <a href="https://stock-market-dev.vercel.app/" style="color: #CCDADC !important; text-decoration: underline;">Visit Signalist</a><br>
-                                © 2025 Signalist
+                                <a href="https://stock-market-dev.vercel.app/" style="color: #CCDADC !important; text-decoration: underline;">Visit FinFlow</a><br>
+                                © 2025 FinFlow
                             </p>
                         </td>
                     </tr>
@@ -284,14 +284,14 @@ export const NEWS_SUMMARY_EMAIL_TEMPLATE = `<!DOCTYPE html>
                             <!-- Footer Text -->
                             <div style="text-align: center; margin: 40px 0 0 0;">
                                 <p style="margin: 0 0 10px 0; font-size: 14px; line-height: 1.5; color: #CCDADC !important;">
-                                    You're receiving this because you subscribed to Signalist news updates.
+                                    You're receiving this because you subscribed to FinFlow news updates.
                                 </p>
                                 <p style="margin: 0 0 10px 0; font-size: 14px; line-height: 1.5; color: #CCDADC !important;">
                                     <a href="#" style="color: #CCDADC !important; text-decoration: underline;">Unsubscribe</a> | 
-                                    <a href="https://signalist.app" style="color: #CCDADC !important; text-decoration: underline;">Visit Signalist</a>
+                                    <a href="https://signalist.app" style="color: #CCDADC !important; text-decoration: underline;">Visit FinFlow</a>
                                 </p>
                                 <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #CCDADC !important;">
-                                    © 2025 Signalist
+                                    © 2025 FinFlow
                                 </p>
                             </div>
                         </td>
@@ -493,14 +493,14 @@ export const STOCK_ALERT_UPPER_EMAIL_TEMPLATE = `<!DOCTYPE html>
                              <!-- Footer Text -->
                             <div style="text-align: center; margin: 40px 0 0 0;">
                                 <p style="margin: 0 0 10px 0; font-size: 14px; line-height: 1.5; color: #CCDADC !important;">
-                                    You're receiving this because you subscribed to Signalist news updates.
+                                    You're receiving this because you subscribed to FinFlow news updates.
                                 </p>
                                 <p style="margin: 0 0 10px 0; font-size: 14px; line-height: 1.5; color: #CCDADC !important;">
                                     <a href="#" style="color: #CCDADC !important; text-decoration: underline;">Unsubscribe</a> | 
-                                    <a href="https://signalist.app" style="color: #CCDADC !important; text-decoration: underline;">Visit Signalist</a>
+                                    <a href="https://signalist.app" style="color: #CCDADC !important; text-decoration: underline;">Visit FinFlow</a>
                                 </p>
                                 <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #CCDADC !important;">
-                                    © 2025 Signalist
+                                    © 2025 FinFlow
                                 </p>
                             </div>
                         </td>
@@ -702,14 +702,14 @@ export const STOCK_ALERT_LOWER_EMAIL_TEMPLATE = `<!DOCTYPE html>
                              <!-- Footer Text -->
                             <div style="text-align: center; margin: 40px 0 0 0;">
                                 <p style="margin: 0 0 10px 0; font-size: 14px; line-height: 1.5; color: #CCDADC !important;">
-                                    You're receiving this because you subscribed to Signalist news updates.
+                                    You're receiving this because you subscribed to FinFlow news updates.
                                 </p>
                                 <p style="margin: 0 0 10px 0; font-size: 14px; line-height: 1.5; color: #CCDADC !important;">
                                     <a href="#" style="color: #CCDADC !important; text-decoration: underline;">Unsubscribe</a> | 
-                                    <a href="https://signalist.app" style="color: #CCDADC !important; text-decoration: underline;">Visit Signalist</a>
+                                    <a href="https://signalist.app" style="color: #CCDADC !important; text-decoration: underline;">Visit FinFlow</a>
                                 </p>
                                 <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #CCDADC !important;">
-                                    © 2025 Signalist
+                                    © 2025 FinFlow
                                 </p>
                             </div>
                         </td>
@@ -922,14 +922,14 @@ export const VOLUME_ALERT_EMAIL_TEMPLATE = `<!DOCTYPE html>
                              <!-- Footer Text -->
                             <div style="text-align: center; margin: 40px 0 0 0;">
                                 <p style="margin: 0 0 10px 0; font-size: 14px; line-height: 1.5; color: #CCDADC !important;">
-                                    You're receiving this because you subscribed to Signalist news updates.
+                                    You're receiving this because you subscribed to FinFlow news updates.
                                 </p>
                                 <p style="margin: 0 0 10px 0; font-size: 14px; line-height: 1.5; color: #CCDADC !important;">
                                     <a href="#" style="color: #CCDADC !important; text-decoration: underline;">Unsubscribe</a> | 
-                                    <a href="https://signalist.app" style="color: #CCDADC !important; text-decoration: underline;">Visit Signalist</a>
+                                    <a href="https://signalist.app" style="color: #CCDADC !important; text-decoration: underline;">Visit FinFlow</a>
                                 </p>
                                 <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #CCDADC !important;">
-                                    © 2025 Signalist
+                                    © 2025 FinFlow
                                 </p>
                             </div>
                         </td>
@@ -1057,7 +1057,7 @@ export const INACTIVE_USER_REMINDER_EMAIL_TEMPLATE = `<!DOCTYPE html>
                             
                             <!-- Main Message -->
                             <p class="mobile-text dark-text-secondary" style="margin: 0 0 30px 0; font-size: 16px; line-height: 1.6; color: #CCDADC;">
-                                We noticed you haven't visited Signalist in a while. The markets have been moving, and there might be some opportunities you don't want to miss!
+                                We noticed you haven't visited FinFlow in a while. The markets have been moving, and there might be some opportunities you don't want to miss!
                             </p>
 
                             <!-- Additional Motivation -->
@@ -1093,10 +1093,10 @@ export const INACTIVE_USER_REMINDER_EMAIL_TEMPLATE = `<!DOCTYPE html>
                                 </p>
                                 <p style="margin: 0 0 10px 0; font-size: 14px; line-height: 1.5; color: #CCDADC !important;">
                                     <a href="{{unsubscribeUrl}}" style="color: #CCDADC !important; text-decoration: underline;">Unsubscribe</a> | 
-                                    <a href="{{dashboardUrl}}" style="color: #CCDADC !important; text-decoration: underline;">Visit Signalist</a>
+                                    <a href="{{dashboardUrl}}" style="color: #CCDADC !important; text-decoration: underline;">Visit FinFlow</a>
                                 </p>
                                 <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #CCDADC !important;">
-                                    © 2025 Signalist
+                                    © 2025 FinFlow
                                 </p>
                             </div>
                         </td>

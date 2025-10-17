@@ -1,5 +1,6 @@
 'use server'
 
+import { cache } from 'react'
 import {
   getDateRange,
   validateArticle,
@@ -152,3 +153,94 @@ async function getGeneralNews(
   // Sort by datetime (newest first)
   return uniqueArticles.sort((a, b) => b.datetime - a.datetime)
 }
+
+// Types for stock search functionality
+interface FinnhubSearchResult {
+  symbol: string
+  description: string
+  displaySymbol: string
+  type: string
+  exchange?: string
+}
+
+interface FinnhubSearchResponse {
+  result: FinnhubSearchResult[]
+}
+
+interface StockWithWatchlistStatus {
+  symbol: string
+  name: string
+  exchange: string
+  type: string
+  isInWatchlist: boolean
+}
+
+// Popular stock symbols for default search
+const POPULAR_STOCK_SYMBOLS = [
+  'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'NVDA', 'META', 'NFLX', 'BABA', 'ORCL'
+]
+
+/**
+ * Search for stocks using Finnhub API
+ * @param query - Optional search query
+ * @returns Array of stocks with watchlist status
+ */
+export const searchStocks = cache(async (query?: string): Promise<StockWithWatchlistStatus[]> => {
+  try {
+    if (!NEXT_PUBLIC_FINNHUB_API_KEY) {
+      throw new Error('FINNHUB_API_KEY is not configured')
+    }
+
+    let searchResults: FinnhubSearchResult[] = []
+
+    if (!query) {
+      // No query - fetch top 10 popular symbols
+      const topSymbols = POPULAR_STOCK_SYMBOLS.slice(0, 10)
+
+      for (const symbol of topSymbols) {
+        try {
+          const url = `${FINNHUB_BASE_URL}/stock/profile2?symbol=${symbol}&token=${NEXT_PUBLIC_FINNHUB_API_KEY}`
+          const profile = await fetchJSON<any>(url, 3600)
+
+          if (profile && profile.name) {
+            searchResults.push({
+              symbol,
+              description: profile.name,
+              displaySymbol: symbol,
+              type: 'Common Stock',
+              exchange: profile.exchange || 'US'
+            })
+          }
+        } catch (error) {
+          console.error(`Error fetching profile for ${symbol}:`, error)
+        }
+      }
+    } else {
+      // Query provided - search Finnhub
+      const trimmedQuery = query.trim()
+      if (trimmedQuery) {
+        const url = `${FINNHUB_BASE_URL}/search?q=${encodeURIComponent(trimmedQuery)}&token=${NEXT_PUBLIC_FINNHUB_API_KEY}`
+        const response = await fetchJSON<FinnhubSearchResponse>(url, 1800)
+        searchResults = response.result || []
+      }
+    }
+
+    // Map to StockWithWatchlistStatus and limit to 15
+    const stocks: StockWithWatchlistStatus[] = searchResults
+      .slice(0, 15)
+      .map(result => ({
+        symbol: result.symbol.toUpperCase(),
+        name: result.description,
+        exchange: result.displaySymbol || 'US',
+        type: result.type || 'Stock',
+        isInWatchlist: false
+      }))
+
+    return stocks
+  } catch (error) {
+    console.error('Error in stock search:', error)
+    return []
+  }
+})
+
+
