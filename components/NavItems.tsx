@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import { NAV_ITEMS } from '@/lib/contants'
+import { NAV_ITEMS } from '@/lib/constants'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { SearchCommand } from './SearchCommand'
@@ -21,7 +21,7 @@ const NavItems = ({
   return (
     <ul className='flex flex-col sm:flex-row p-2 gap-3 sm:gap-10 font-medium'>
       {NAV_ITEMS.map(({ href, label }) => {
-        if (label === 'Search')
+        if (href === '/search')
           return (
             <li key={'search-command'}>
               <SearchCommand
