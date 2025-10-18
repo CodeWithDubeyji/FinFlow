@@ -67,6 +67,12 @@ declare global {
         intro: string;
     };
 
+    type DailyNewsSummaryEmailData = {
+        email: string;
+        newsContent: string;
+        date?: string;
+    };
+
     type User = {
         id: string;
         name: string;
@@ -102,13 +108,13 @@ declare global {
         }>;
     };
 
-    type WatchlistButtonProps = {
+    type StarButtonProps = {
         symbol: string;
         company: string;
         isInWatchlist: boolean;
-        showTrashIcon?: boolean;
-        type?: 'button' | 'icon';
         onWatchlistChange?: (symbol: string, isAdded: boolean) => void;
+        className?: string;
+        size?: 'sm' | 'md' | 'lg';
     };
 
     type QuoteData = {

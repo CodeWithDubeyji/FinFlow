@@ -37,4 +37,6 @@ export const connectToDatabase = async () => {
       cached.conn.connection.db?.databaseName || 'unknown'
     }`
   )
+
+  return cached.conn
 }

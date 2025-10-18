@@ -1,10 +1,16 @@
 'use client'
 import React from 'react'
-import { NAV_ITEMS } from '@/lib/contants'
+import { NAV_ITEMS } from '@/lib/constants'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-const NavItems = () => {
-    
+import { SearchCommand } from './SearchCommand'
+
+const NavItems = ({
+  initialStocks
+}: {
+  initialStocks: StockWithWatchlistStatus[]
+}) => {
+  
   const path = usePathname()
 
   const isActive = (href: string) => {
@@ -14,18 +20,30 @@ const NavItems = () => {
 
   return (
     <ul className='flex flex-col sm:flex-row p-2 gap-3 sm:gap-10 font-medium'>
-      {NAV_ITEMS.map(({ href, label }) => (
-        <li key={href} className='nav-item'>
-          <Link
-            href={href}
-            className={`hover:text-yellow-500 transition-colors ${
-              isActive(href) ? 'text-gray-100' : ''
-            }`}
-          >
-            {label}
-          </Link>
-        </li>
-      ))}
+      {NAV_ITEMS.map(({ href, label }) => {
+        if (href === '/search')
+          return (
+            <li key={'search-command'}>
+              <SearchCommand
+                renderAs='text'
+                label={label}
+                initialStocks={initialStocks}
+              />
+            </li>
+          )
+        return (
+          <li key={href} className='nav-item'>
+            <Link
+              href={href}
+              className={`hover:text-yellow-500 transition-colors ${
+                isActive(href) ? 'text-gray-100' : ''
+              }`}
+            >
+              {label}
+            </Link>
+          </li>
+        )
+      })}
     </ul>
   )
 }

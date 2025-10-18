@@ -8,9 +8,16 @@ import {
   INVESTMENT_GOALS,
   PREFERRED_INDUSTRIES,
   RISK_TOLERANCE_OPTIONS
-} from '@/lib/contants'
+} from '@/lib/constants'
 import FooterLinks from '@/components/forms/FooterLinks'
+import { signUpWithEmail } from '@/lib/actions/auth.actions'
+
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
+
 const SignUp = () => {
+  const router = useRouter()
+
   const {
     register,
     handleSubmit,
@@ -30,9 +37,18 @@ const SignUp = () => {
   })
   const onSubmit = async (data: SignUpFormData) => {
     try {
-      // TODO: wire to API/auth action; show toast/redirect on success
+      const result = await signUpWithEmail(data)
+
+      if (result?.success) {
+        router.push('/')
+        toast.success('Account created successfully! Welcome aboard. 🎉')
+      }
     } catch (error) {
-      // TODO: show user-friendly error
+      console.error(error)
+      toast.error('Sign up failed', {
+        description:
+          error instanceof Error ? error.message : 'Failed to create an account'
+      })
     }
   }
   return (
@@ -46,7 +62,10 @@ const SignUp = () => {
           placeholder='John Doe'
           register={register}
           error={errors.fullName}
-          validation={{ required: 'Full Name is required', minLength: { value: 2, message: 'Must be at least 2 characters' } }}
+          validation={{
+            required: 'Full Name is required',
+            minLength: { value: 2, message: 'Must be at least 2 characters' }
+          }}
         />
         <InputField
           name='email'
