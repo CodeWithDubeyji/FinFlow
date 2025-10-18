@@ -17,6 +17,7 @@
     "@radix-ui/react-popover": "^1.1.15",
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-slot": "^1.2.3",
+    "@types/react-select-country-list": "^2.2.3",
     "better-auth": "^1.3.24",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -38,17 +39,11 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-<<<<<<< Updated upstream
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
-=======
-    "@tailwindcss/postcss": "^4.1.14",
-    "@types/node": "^20.19.22",
->>>>>>> Stashed changes
     "@types/nodemailer": "^7.0.2",
-    "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.2",
-    "@types/react-select-country-list": "^2.2.3",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
     "tailwindcss": "^4",
