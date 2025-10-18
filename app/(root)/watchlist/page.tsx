@@ -5,6 +5,9 @@ import { searchStocks, getNews } from '@/lib/actions/finnhub.actions'
 import { getCurrentUserWatchlistSymbols } from '@/lib/actions/watchlist.actions'
 import Link from 'next/link'
 
+// Force dynamic rendering since we use headers for auth
+export const dynamic = 'force-dynamic'
+
 export default async function Watchlist() {
   const initialStocks = await searchStocks();
   const watchlistSymbols = await getCurrentUserWatchlistSymbols();
