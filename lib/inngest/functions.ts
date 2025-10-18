@@ -110,10 +110,18 @@ export const sendDailyNewsSummary = inngest.createFunction(
       return perUser
     })
 
-    // Step 3: Summarize news via AI
+    // Step 3: Summarize news via AI (moved outside step.run to avoid nesting)
     const userNewsSummaries = await Promise.all(
-      userNewsData.map(async ({ user, articles }) => {
-        return await step.run(`summarize-news-${user.email}`, async () => {
+      userNewsData.map(async ({ user, articles }, index) => {
+        // Add delay between requests to avoid rate limiting (stagger by 2 seconds)
+        if (index > 0) {
+          await new Promise(resolve => setTimeout(resolve, 2000 * index))
+        }
+
+        let retryCount = 0
+        const maxRetries = 3
+
+        while (retryCount < maxRetries) {
           try {
             const prompt = NEWS_SUMMARY_EMAIL_PROMPT.replace(
               '{{newsData}}',
@@ -135,11 +143,30 @@ export const sendDailyNewsSummary = inngest.createFunction(
             const newsContent =
               (part && 'text' in part ? part.text : null) || 'No market news.'
             return { user, newsContent }
-          } catch (e) {
-            console.error(`Failed to summarize news for user ${user.email}:`, e)
-            return { user, newsContent: null }
+          } catch (error: any) {
+            console.error(`AI inference attempt ${retryCount + 1} failed for user ${user.email}:`, error)
+
+            // Check if it's a quota exceeded error
+            if (error?.code === 429 || error?.status === 'RESOURCE_EXHAUSTED') {
+              retryCount++
+
+              if (retryCount < maxRetries) {
+                // Exponential backoff: 30s, 60s, 120s
+                const delayMs = Math.pow(2, retryCount) * 30000
+                console.log(`Retrying AI inference for ${user.email} in ${delayMs}ms (attempt ${retryCount + 1}/${maxRetries})`)
+                await new Promise(resolve => setTimeout(resolve, delayMs))
+                continue
+              }
+            }
+
+            // For other errors or max retries reached, return fallback content
+            console.error(`Failed to summarize news for user ${user.email} after ${maxRetries} attempts:`, error)
+            return { user, newsContent: 'Market news summary temporarily unavailable due to high demand. Please check back later.' }
           }
-        })
+        }
+
+        // This should never be reached, but just in case
+        return { user, newsContent: 'Market news summary temporarily unavailable.' }
       })
     )
 

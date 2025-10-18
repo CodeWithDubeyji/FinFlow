@@ -17,13 +17,16 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
     <main className='auth-layout'>
       <section className='auth-left-section scrollbar-hide-default'>
         <Link href='/' className='auth-logo'>
-          <Image
-            src='/assets/icons/logo.svg'
-            alt='Logo'
-            width={100}
-            height={100}
-            className='h-8 w-auto'
-          />
+          <div className='flex flex-row items-center gap-2'>
+            <Image
+              src='/assets/icons/image.png'
+              alt='Logo'
+              width={100}
+              height={100}
+              className='h-8 w-auto'
+            />
+            <h2 className='text-2xl font-bold text-gray-200'>FinFlow</h2>
+          </div>
         </Link>
         <div className='pb-6 lg:pb-8 flex-1'>{children}</div>
       </section>
